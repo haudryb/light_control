@@ -7,6 +7,9 @@ const int leds_pin = 9;
 #define ON_HIGH 3
 #define ON_MODULATED 4
 
+#define DELTA_PW 1 // about 0,2%
+#define DELTA_TIME 50 // 50 ms period of pw variation
+
 volatile int mode = OFF;
 volatile unsigned int pw = 0;
 
@@ -22,7 +25,8 @@ void loop()
   switch (mode)
   {
     case ON_MODULATED :
-    modulation();
+    modulation(); // 1% variation up or down
+    delay(DELTA_TIME);
     break;
     
     case OFF :
@@ -78,6 +82,27 @@ void change_mode()
 
 void modulation()
 {
+  static boolean up = true;
+  if (pw == 255)
+  {
+    up = false;
+  }
+  
+  if (pw == 0)
+  {
+    up = true;
+  }
+  
+  if (up)
+  {
+    pw += DELTA_PW;
+  }
+  else
+  {
+    pw -= DELTA_PW;
+  }
+  Serial.print("pw = ");
+  Serial.println(pw);
   
 }
   
