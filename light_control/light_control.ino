@@ -8,7 +8,7 @@ const int leds_pin = 9;
 #define ON_MODULATED 4
 
 #define DELTA_PW 1 // about 0,2%
-#define DELTA_TIME 100 // 100 ms period of pw variation
+
 
 volatile int mode = OFF;
 volatile unsigned int pw = 0;
@@ -24,14 +24,26 @@ void loop()
 {
   switch (mode)
   {
+    static int timing_begin = 0;
+    static int modulation_step = 150;
     case ON_MODULATED :
     if (pw == 0)
     {
       analogWrite(leds_pin, pw);
+      timing_begin = 0;
+      modulation_step = 150;
       delay(2000);
     }
+    if (timing_begin < 25)
+    {
+      timing_begin++;
+    }
+    else
+    {
+      modulation_step = 100;
+    }
     modulation(); // 1% variation up or down
-    delay(DELTA_TIME);
+    delay(modulation_step);
     break;
     
     case OFF :
