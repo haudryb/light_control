@@ -8,20 +8,22 @@ const int leds_pin = 9;
 #define ON_MODULATED 4
 
 #define DELTA_PW 1 // about 0,2%
+#define DELAY_INTERRUPT_DEACT 200 // 200ms
 
-
-volatile int mode = OFF;
+volatile int mode = ON_MODULATED;
 volatile unsigned int pw = 0;
+volatile unsigned long time_button_push = 0;
+
 
 void setup()
 {
   pinMode(leds_pin, OUTPUT);
-  attachInterrupt(0, change_mode, RISING);
+  attachInterrupt(0, debounce_interrupt, RISING);
   Serial.begin(9600);
 }
 
 void loop()
-{
+{ 
   switch (mode)
   {
     static int timing_begin = 0;
@@ -65,8 +67,18 @@ void loop()
   analogWrite(leds_pin, pw);
 }
 
+void debounce_interrupt()
+{
+  if ((long)(millis() - time_button_push) >= DELAY_INTERRUPT_DEACT)
+  {
+    change_mode();
+    time_button_push = millis();
+  } 
+}
+
 void change_mode()
 {
+  
   switch (mode)
   {
     case OFF :
