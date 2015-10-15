@@ -11,7 +11,7 @@ const int leds_pin = 9;
 #define DELAY_INTERRUPT_DEACT 200 // 200ms
 
 
-volatile int mode = ON_MODULATED;
+volatile int mode = OFF;
 volatile unsigned int pw = 0;
 volatile unsigned long time_button_push = 0;
 
